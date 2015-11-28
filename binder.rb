@@ -1,23 +1,9 @@
-doc = <<DOCOPT
-Binder.
-
-Usage:
-  #{__FILE__} --control=<f>
-  #{__FILE__} -h | --help
-
-Options:
-  -h --help      Show this screen.
-  --control=<f>  Location of the UNIX socket used for controlling and binding.
-
-DOCOPT
-
-require 'docopt'
 require 'socket'
 require 'json'
 
 class BinderServer
-  def initialize(args)
-    @control_file = args['--control']
+  def initialize(control_file)
+    @control_file = control_file
   end
 
   def handle_client(s)
@@ -119,9 +105,9 @@ class BinderServer
   end
 end
 
-begin
-  server = BinderServer.new Docopt::docopt(doc)
+if ARGV.length == 0
+  abort "Usage: #{$0} <path/to/control.sock>"
+else
+  server = BinderServer.new ARGV[0]
   server.serve
-rescue Docopt::Exit => e
-  puts e.message
 end

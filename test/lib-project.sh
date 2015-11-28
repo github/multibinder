@@ -3,7 +3,7 @@
 
 project_setup () {
   local control_sock=${TEMPDIR}/binder.sock
-  launch_service "binder" ruby binder.rb --control=${control_sock}
+  launch_service "binder" ruby binder.rb ${control_sock}
 
   tries=0
   while [ ! -S $control_sock ]; do
