@@ -1,0 +1,13 @@
+#!/bin/sh
+
+export RUBY_VERSION=2.1.6-github
+export RBENV_VERSION=2.1.6-github
+export PATH=/usr/share/rbenv/shims:/usr/sbin:$PATH
+export BASE_DIR=/data/binder
+
+#bundle install --local --quiet --path vendor/gems
+
+REALPATH=$(cd $(dirname "$0") && pwd)
+
+cd $REALPATH/../
+script/test
