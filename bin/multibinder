@@ -1,7 +1,9 @@
+#!/usr/bin/env ruby
+
 require 'socket'
 require 'json'
 
-class BinderServer
+class MultiBinderServer
   def initialize(control_file)
     @control_file = control_file
   end
@@ -24,7 +26,7 @@ class BinderServer
   end
 
   def bind_to_env(bind)
-    "BINDER_BIND__tcp__#{bind['address'].sub('.','_')}__#{bind['port']}"
+    "MULTIBINDER_BIND__tcp__#{bind['address'].sub('.','_')}__#{bind['port']}"
   end
 
   def do_bind(s, request)
@@ -108,6 +110,6 @@ end
 if ARGV.length == 0
   abort "Usage: #{$0} <path/to/control.sock>"
 else
-  server = BinderServer.new ARGV[0]
+  server = MultiBinderServer.new ARGV[0]
   server.serve
 end

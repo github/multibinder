@@ -2,8 +2,8 @@
 # Extends lib.sh for this project
 
 project_setup () {
-  local control_sock=${TEMPDIR}/binder.sock
-  launch_service "binder" ruby binder.rb ${control_sock}
+  local control_sock=${TEMPDIR}/multibinder.sock
+  launch_service "multibinder" bundle exec multibinder ${control_sock}
 
   tries=0
   while [ ! -S $control_sock ]; do
@@ -18,5 +18,5 @@ project_setup () {
 }
 
 project_cleanup () {
-  kill_service "binder"
+  kill_service "multibinder"
 }

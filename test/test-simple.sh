@@ -9,11 +9,11 @@ TEST_PORT=8000
 
 tests_use_port $TEST_PORT
 
-begin_test "server successfully binds and accepts through binder"
+begin_test "server successfully binds and accepts through multibinder"
 (
   setup
 
-  BINDER_SOCK=${TEMPDIR}/binder.sock launch_service "http" ruby test/httpbinder.rb
+  BINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "http" ruby test/httpbinder.rb
 
   wait_for_port "binder" $(offset_port $TEST_PORT)
 
@@ -25,7 +25,7 @@ begin_test "server can restart without requests failing while down"
 (
   setup
 
-  BINDER_SOCK=${TEMPDIR}/binder.sock launch_service "http" ruby test/httpbinder.rb
+  BINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "http" ruby test/httpbinder.rb
 
   wait_for_port "binder" $(offset_port $TEST_PORT)
 
@@ -37,7 +37,7 @@ begin_test "server can restart without requests failing while down"
   sleep 0.5
 
   # now restart the service
-  BINDER_SOCK=${TEMPDIR}/binder.sock launch_service "http" ruby test/httpbinder.rb
+  BINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "http" ruby test/httpbinder.rb
 
   # curl should finish, and succeed
   wait $curl_pid
