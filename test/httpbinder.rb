@@ -1,19 +1,9 @@
 require 'socket'
 require 'json'
+require 'multibinder'
 
-binder = UNIXSocket.open(ENV['BINDER_SOCK'])
-binder.sendmsg JSON.dump({
-  :jsonrpc => '2.0',
-  :method => 'bind',
-  :params => [{
-    :address => '127.0.0.1',
-    :port => '8000'
-  }]
-}, 0, nil)
-response, _, _, ctl = binder.recvmsg(:scm_rights=>true)
-puts JSON.parse(response)
-server = ctl.unix_rights[0]
-binder.close
+server = MultiBinder.bind '127.0.0.1', 8000
+MultiBinder.done
 
 loop do
   socket, _ = server.accept
