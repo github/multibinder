@@ -3,7 +3,6 @@ require 'json'
 require 'multibinder'
 
 server = MultiBinder.bind '127.0.0.1', 8000
-MultiBinder.done
 
 loop do
   socket, _ = server.accept
