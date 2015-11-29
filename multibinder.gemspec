@@ -8,9 +8,8 @@ Gem::Specification.new do |spec|
   spec.version       = MultiBinder::VERSION
   spec.authors       = ["Theo Julienne"]
   spec.email         = ["theojulienne@github.com"]
-  spec.summary       = %q{TODO: Write a short summary. Required.}
-  spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ""
+  spec.summary       = %q{multibinder is a tiny ruby server that makes writing zero-downtime-reload services simpler.}
+  spec.homepage      = "https://github.com/theojulienne/multibinder"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0")
