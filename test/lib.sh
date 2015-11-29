@@ -179,6 +179,8 @@ setup() {
   trap cleanup TERM
 
   project_setup "$@"
+
+  set -e
 }
 
 wait_for_file () {
@@ -253,6 +255,17 @@ launch_service () {
 kill_service () {
   local service_name=$1
   kill $(cat ${TEMPDIR}/${service_name}.pid) || true
+  rm -rf ${TEMPDIR}/${service_name}.pid
+}
+
+service_pid () {
+  local service_name=$1
+  cat ${TEMPDIR}/${service_name}.pid
+}
+
+service_log () {
+  local service_name=$1
+  echo ${LOGDIR}/${service_name}.log
 }
 
 # Stub out functions and let the project extend them

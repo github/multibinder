@@ -39,6 +39,7 @@ class MultiBinderServer
       else
         socket = Socket.new(:INET, :STREAM, 0)
         socket.setsockopt(Socket::SOL_SOCKET, Socket::SO_REUSEADDR, true)
+        socket.fcntl(Fcntl::F_SETFD, socket.fcntl(Fcntl::F_GETFD) & (-Fcntl::FD_CLOEXEC-1))
         socket.bind(Addrinfo.tcp(bind['address'], bind['port']))
         socket.listen(bind['backlog'] || 1000)
         ENV[name] = socket.fileno.to_s
@@ -68,13 +69,22 @@ class MultiBinderServer
   def bind_accept_loop
     UNIXServer.open(@control_file) do |serv|
       puts "Listening for binds on control socket: #{@control_file}"
+      STDOUT.flush
 
       Signal.trap("USR1") do
-        @control_file.close
-        File.unlink @control_file
+        serv.close
+        begin
+          File.unlink @control_file
+        rescue Errno::ENOENT
+          # cool!
+        end
 
         # respawn ourselved in an identical way, keeping state through environment.
-        exec [RbConfig.ruby, $0] + ARGV
+        puts 'Respawning...'
+        STDOUT.flush
+        args = [RbConfig.ruby, $0, *ARGV]
+        args << { :close_others => false } if RUBY_VERSION > '1.9' # RUBBY.
+        Kernel.exec *args
       end
 
       loop do
@@ -102,7 +112,11 @@ class MultiBinderServer
     begin
       bind_accept_loop
     ensure
-      File.unlink @control_file
+      begin
+        File.unlink @control_file
+      rescue Errno::ENOENT
+        # cool!
+      end
     end
   end
 end

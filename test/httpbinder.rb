@@ -15,7 +15,7 @@ loop do
 
   socket.print "\r\n"
 
-  socket.print "Hello World!\n"
+  socket.print "Hello World #{ARGV[0] || ''}!\n"
 
   socket.close
 end
