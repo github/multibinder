@@ -2,7 +2,7 @@ require 'socket'
 require 'json'
 require 'multibinder'
 
-server = MultiBinder.bind '127.0.0.1', 8000
+server = MultiBinder.bind '127.0.0.1', ARGV[0].to_i
 
 loop do
   socket, _ = server.accept
@@ -15,7 +15,7 @@ loop do
 
   socket.print "\r\n"
 
-  socket.print "Hello World #{ARGV[0] || ''}!\n"
+  socket.print "Hello World #{ARGV[1] || ''}!\n"
 
   socket.close
 end
