@@ -14,7 +14,7 @@ bundle exec multibinder /path/to/control.sock
 
 #### Client usage
 
-The multibinder library retrieves a socket from a local multibinder server, communicating over the socket you specify in `MULTIBINDER_SOCK` (which has to be the same as specified when running multibinder, and the user must have permission to access the file).
+The multibinder library retrieves a socket from a local multibinder server, communicating over the socket you specify in the `MULTIBINDER_SOCK` environment variable (which has to be the same as specified when running multibinder, and the user must have permission to access the file).
 
 ```ruby
 require 'multibinder'
