@@ -25,4 +25,4 @@ server = MultiBinder.bind '127.0.0.1', 8000
 # ... server.accept ...
 ```
 
-The socket has close-on-exec disabled and is ready to be used in Ruby or passed on to a real service like haproxy. For an example of using multibinder with haproxy, see [the haproxy test shim](https://github.com/theojulienne/multibinder/blob/master/test/haproxy_shim.rb).
+The socket has close-on-exec disabled and is ready to be used in Ruby or passed on to a real service like haproxy via spawn/exec. For an example of using multibinder with haproxy (there are a couple of tricks), see [the haproxy test shim](https://github.com/theojulienne/multibinder/blob/master/test/haproxy_shim.rb).
