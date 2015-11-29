@@ -1,8 +1,11 @@
-require "multibinder/version"
+require 'multibinder/version'
+require 'json'
 
 module MultiBinder
   def self.bind(address, port)
-    binder = UNIXSocket.open(ENV['BINDER_SOCK'])
+    abort 'MULTIBINDER_SOCK environment variable must be set' if !ENV['MULTIBINDER_SOCK']
+
+    binder = UNIXSocket.open(ENV['MULTIBINDER_SOCK'])
 
     # make the request
     binder.sendmsg JSON.dump({
@@ -23,6 +26,8 @@ module MultiBinder
 
     binder.close
 
-    return ctl.unix_rights[0]
+    socket = ctl.unix_rights[0]
+    socket.fcntl(Fcntl::F_SETFD, socket.fcntl(Fcntl::F_GETFD) & (-Fcntl::FD_CLOEXEC-1))
+    socket
   end
 end
