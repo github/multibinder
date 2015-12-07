@@ -9,4 +9,3 @@ REALPATH=$(cd $(dirname "$0") && pwd)
 cd $REALPATH/../
 
 bundle install --local --quiet --path vendor/gems
-
