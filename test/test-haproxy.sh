@@ -20,7 +20,7 @@ begin_test "haproxy runs with multibinder"
 
   export TEMPDIR
 
-  MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "haproxy" bundle exec ruby test/haproxy_shim.rb $(offset_port $TEST_PORT)
+  launch_service "haproxy" bundle exec env MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock ruby test/haproxy_shim.rb $(offset_port $TEST_PORT)
 
   wait_for_port "haproxy" $(offset_port $TEST_PORT)
 
