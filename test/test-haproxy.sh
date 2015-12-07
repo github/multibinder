@@ -9,7 +9,7 @@ TEST_PORT=8000
 
 tests_use_port $TEST_PORT
 
-if ! which -s haproxy; then
+if ! which haproxy >/dev/null 2>&1; then
   echo "haproxy not available, skipping tests."
   exit 0
 fi
