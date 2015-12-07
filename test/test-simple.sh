@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # test-simple.sh: simple sanity checks
 

@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # test-haproxy.sh: check that we can work with haproxy (if it's installed)
 
