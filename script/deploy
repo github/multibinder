@@ -10,4 +10,4 @@ cd $REALPATH/../
 
 bundle install --local --quiet --path vendor/gems
 
-sudo sv restart multibinder
+sudo sv 1 multibinder
