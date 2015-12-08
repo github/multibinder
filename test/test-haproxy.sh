@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # test-haproxy.sh: check that we can work with haproxy (if it's installed)
 
@@ -9,7 +9,7 @@ TEST_PORT=8000
 
 tests_use_port $TEST_PORT
 
-if ! which -s haproxy; then
+if ! which haproxy >/dev/null 2>&1; then
   echo "haproxy not available, skipping tests."
   exit 0
 fi
@@ -20,7 +20,7 @@ begin_test "haproxy runs with multibinder"
 
   export TEMPDIR
 
-  MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "haproxy" bundle exec ruby test/haproxy_shim.rb $(offset_port $TEST_PORT)
+  launch_service "haproxy" bundle exec env MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock ruby test/haproxy_shim.rb $(offset_port $TEST_PORT)
 
   wait_for_port "haproxy" $(offset_port $TEST_PORT)
 

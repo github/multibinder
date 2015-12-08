@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # test-simple.sh: simple sanity checks
 
@@ -13,7 +13,7 @@ begin_test "server binds and accepts through multibinder"
 (
   setup
 
-  MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "http" bundle exec ruby test/httpbinder.rb $(offset_port $TEST_PORT)
+  launch_service "http" bundle exec env MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock ruby test/httpbinder.rb $(offset_port $TEST_PORT)
 
   wait_for_port "binder" $(offset_port $TEST_PORT)
 
@@ -25,7 +25,7 @@ begin_test "server can restart without requests failing while down"
 (
   setup
 
-  MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "http" bundle exec ruby test/httpbinder.rb $(offset_port $TEST_PORT)
+  launch_service "http" bundle exec env MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock ruby test/httpbinder.rb $(offset_port $TEST_PORT)
 
   wait_for_port "binder" $(offset_port $TEST_PORT)
 
@@ -37,7 +37,7 @@ begin_test "server can restart without requests failing while down"
   sleep 0.5
 
   # now restart the service
-  MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "http" bundle exec ruby test/httpbinder.rb $(offset_port $TEST_PORT)
+  launch_service "http" bundle exec env MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock ruby test/httpbinder.rb $(offset_port $TEST_PORT)
 
   # curl should finish, and succeed
   wait $curl_pid
@@ -49,12 +49,12 @@ begin_test "server can load a second copy then terminate the first"
 (
   setup
 
-  MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "http" bundle exec ruby test/httpbinder.rb $(offset_port $TEST_PORT) "first"
+  launch_service "http" bundle exec env MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock ruby test/httpbinder.rb $(offset_port $TEST_PORT) "first"
   wait_for_port "binder" $(offset_port $TEST_PORT)
 
   curl --max-time 5 http://localhost:$(offset_port $TEST_PORT)/r1 | grep -q 'Hello World first'
 
-  MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "http2" bundle exec ruby test/httpbinder.rb $(offset_port $TEST_PORT) "second"
+  launch_service "http2" bundle exec env MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock ruby test/httpbinder.rb $(offset_port $TEST_PORT) "second"
 
   curl --max-time 5 http://localhost:$(offset_port $TEST_PORT)/r2 | egrep -q 'Hello World (first|second)'
 
@@ -70,7 +70,7 @@ begin_test "multibinder restarts safely on sigusr1"
 (
   setup
 
-  MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "http" bundle exec ruby test/httpbinder.rb $(offset_port $TEST_PORT)
+  launch_service "http" bundle exec env MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock ruby test/httpbinder.rb $(offset_port $TEST_PORT)
   wait_for_port "binder" $(offset_port $TEST_PORT)
 
   curl --max-time 5 http://localhost:$(offset_port $TEST_PORT)/r1 | grep -q 'Hello World'
@@ -86,7 +86,7 @@ begin_test "multibinder restarts safely on sigusr1"
   lsof -i :$(offset_port $TEST_PORT) -a -p $(service_pid "multibinder")
 
   # should be able to request the bind again
-  MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock launch_service "http" bundle exec ruby test/httpbinder.rb $(offset_port $TEST_PORT)
+  launch_service "http" bundle exec env MULTIBINDER_SOCK=${TEMPDIR}/multibinder.sock ruby test/httpbinder.rb $(offset_port $TEST_PORT)
   wait_for_port "multibinder" $(offset_port $TEST_PORT)
 
   # requests should work
