@@ -2,6 +2,7 @@
 
 require 'socket'
 require 'json'
+require 'fcntl'
 
 class MultiBinderServer
   def initialize(control_file)
