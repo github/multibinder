@@ -7,6 +7,7 @@ require 'fcntl'
 class MultiBinderServer
   def initialize(control_file)
     @control_file = control_file
+    @sockets = {}
   end
 
   def handle_client(s)
@@ -35,7 +36,9 @@ class MultiBinderServer
 
     begin
       name = bind_to_env(bind)
-      if ENV[name]
+      if @sockets[name]
+        socket = @sockets[name]
+      elsif ENV[name]
         socket = IO.for_fd ENV[name].to_i
       else
         socket = Socket.new(:INET, :STREAM, 0)
@@ -58,6 +61,8 @@ class MultiBinderServer
       s.sendmsg JSON.dump(response), 0, nil
       return
     else
+      @sockets[name] = socket
+      
       response = {
         :jsonrpc => '2.0',
         :id => request['id'],
