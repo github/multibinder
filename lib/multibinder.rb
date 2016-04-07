@@ -2,7 +2,7 @@ require 'multibinder/version'
 require 'json'
 
 module MultiBinder
-  def self.bind(address, port)
+  def self.bind(address, port, options={})
     abort 'MULTIBINDER_SOCK environment variable must be set' if !ENV['MULTIBINDER_SOCK']
 
     binder = UNIXSocket.open(ENV['MULTIBINDER_SOCK'])
@@ -14,7 +14,7 @@ module MultiBinder
       :params => [{
         :address => address,
         :port => port,
-      }]
+      }.merge(options)]
     }, 0, nil)
 
     # get the response
