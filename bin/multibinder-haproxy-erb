@@ -1,0 +1,40 @@
+#!/usr/bin/env ruby
+# Takes arguments that will be fed to haproxy, but sneakily tweaks the argument
+# to '-f' by ERB-parsing it and then providing the result.
+
+require 'multibinder'
+require 'socket'
+require 'fcntl'
+require 'erb'
+
+haproxy_call = ARGV
+
+# find and update '-f' argument to the output of ERB processing
+abort 'multibinder-haproxy expects a configuration file to be passed to haproxy' if haproxy_call.index('-f').nil?
+config_file_index = haproxy_call.index('-f') + 1
+haproxy_erb = haproxy_call[config_file_index]
+abort 'Config file must end with .erb' unless haproxy_erb.end_with? '.erb'
+haproxy_cfg = haproxy_erb.sub('.erb', '')
+haproxy_call[config_file_index] = haproxy_cfg
+
+def bind_tcp(ip, port)
+  if ENV['MULTIBINDER_SOCK'] && !ENV['MULTIBINDER_SOCK'].empty?
+    # if we have multibinder, use it to reuse our binds safely
+    server = MultiBinder.bind ip, port, { :backlog => 10240 }
+    "fd@#{server.fileno}"
+  else
+    # otherwise resort to the old fashioned binds with downtime/packet loss
+    puts "WARNING: Using haproxy direct binds, restarts will cause error!"
+    "#{ip}:#{port}"
+  end
+end
+
+new_data = ERB.new(File.read(haproxy_erb)).result
+File.write(haproxy_cfg, new_data)
+
+if haproxy_call.index('--erb-write-only')
+  puts 'ERB config write requested without launching command, exiting.'
+  exit 0
+end
+
+Process.exec *haproxy_call, :close_others => false

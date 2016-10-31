@@ -1,0 +1,20 @@
+[Unit]
+Description=HAProxy Load Balancer
+Documentation=man:haproxy(1)
+Documentation=file:/usr/share/doc/haproxy/configuration.txt.gz
+After=network.target syslog.service multibinder.service
+Wants=syslog.service multibinder.service
+
+[Service]
+Environment=CONFIG=/etc/haproxy/%i.cfg.erb
+Environment=MULTIBINDER_SOCK=/run/multibinder.sock
+EnvironmentFile=-/etc/default/haproxy
+ExecStartPre=/root/multibinder-haproxy-erb /usr/sbin/haproxy -f ${CONFIG} -c -q
+ExecStart=/root/multibinder-haproxy-wrapper /usr/sbin/haproxy -Ds -f ${CONFIG} -p /run/haproxy-%i.pid $EXTRAOPTS
+ExecReload=/bin/sh -c "/root/multibinder-haproxy-erb /usr/sbin/haproxy -c -f ${CONFIG}; /bin/kill -USR2 $MAINPID"
+ExecStop=/bin/kill -TERM $MAINPID
+KillMode=none
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

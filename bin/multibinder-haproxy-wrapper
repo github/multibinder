@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+# Runs multibinder-haproxy-erb with the same arguments, supporting a USR2 for reload.
+
+dir = File.expand_path(File.dirname(__FILE__))
+$launch_haproxy = File.join(dir, "multibinder-haproxy-erb")
+
+SERVICE_DIR = File.basename(dir)
+SERVICE_NAME = SERVICE_DIR.split('-').drop(1).join('-')
+
+abort 'multibinder-haproxy-wrapper expects a pid file to be passed to haproxy' if ARGV.index('-p').nil?
+pid_file_index = ARGV.index('-p') + 1
+$PID_FILE = ARGV[pid_file_index]
+
+# launches a new instance. the haproxy-instance script automatically handles
+# everything: when no existing pid exists, it starts haproxy normally. when
+# an existing haproxy is running, it calls a new copy with `-sf` so that
+# haproxy safely hands over execution to the new process.
+def launch_instance
+  args = [$launch_haproxy] + ARGV
+  if File.exist? $PID_FILE
+    args << "-sf"
+    args.concat File.read($PID_FILE).split()
+  end
+
+  Process.spawn *args
+end
+
+def cleanup_existing
+  if File.exist? $PID_FILE
+    `kill -USR1 $(cat #{$PID_FILE}); rm #{$PID_FILE}`
+  end
+end
+
+# A SIGUSR2 tells us to safely relaunch
+Signal.trap("USR2") do
+  old_pids = File.read($PID_FILE)
+  
+  launch_instance
+
+  # wait a while for the pid file to change. after a while, give up and unblock reloads
+  for i in 0..20
+    break if File.read($PID_FILE) != old_pids
+    sleep 1
+  end
+end
+
+# If we try to kill haproxy, have them gracefully quit rather than terminate immediately
+Signal.trap("TERM") do
+  cleanup_existing
+  exit
+end
+
+# Start the first process itself
+launch_instance
+
+# Keep waitpid()ing forever.
+begin
+  loop do
+    Process.waitpid
+    sleep 10
+  end
+ensure
+  cleanup_existing
+end

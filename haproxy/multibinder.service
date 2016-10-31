@@ -1,0 +1,10 @@
+[Unit]
+Description=Multibinder
+After=network.target
+
+[Service]
+ExecStart=/usr/local/bin/multibinder /run/multibinder.sock
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
