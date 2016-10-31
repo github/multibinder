@@ -1,8 +1,8 @@
-### multibinder + HAProxy
+## multibinder + HAProxy
 
 HAProxy by default doesn't include support for zero-downtime reloads. multibinder was developed to work with HAProxy, and has some useful wrappers included that allow running multiple HAProxy instances with multibinder on the same machine, while enabling zero-downtime reloads. 
 
-#### Installation on Ubuntu 16.04
+### Installation on Ubuntu 16.04
 
 Install multibinder and dependencies:
 ```
