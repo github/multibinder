@@ -1,5 +1,6 @@
 require 'multibinder/version'
 require 'json'
+require 'securerandom'
 
 module MultiBinder
   def self.bind(address, port, options={})
@@ -11,6 +12,7 @@ module MultiBinder
     binder.sendmsg JSON.dump({
       :jsonrpc => '2.0',
       :method => 'bind',
+      :id => SecureRandom.uuid,
       :params => [{
         :address => address,
         :port => port,
