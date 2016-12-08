@@ -1,5 +1,6 @@
 require 'multibinder/version'
 require 'json'
+require 'socket'
 
 module MultiBinder
   def self.bind(address, port, options={})
