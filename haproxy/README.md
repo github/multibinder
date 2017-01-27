@@ -88,3 +88,8 @@ $ sudo systemctl status multibinder
 Oct 31 20:50:05 ip-172-31-8-204 systemd[1]: Started Multibinder.
 Oct 31 20:50:05 ip-172-31-8-204 multibinder[2751]: Listening for binds on control socket: /run/multibinder.sock
 ```
+
+Reloading an haproxy instance safely can then be requested through systemctl:
+```
+$ sudo systemctl reload haproxy-multi@foo
+``
