@@ -1,6 +1,8 @@
 require 'multibinder/version'
 require 'json'
 require 'securerandom'
+require 'socket'
+require 'fcntl'
 
 module MultiBinder
   def self.bind(address, port, options={})
