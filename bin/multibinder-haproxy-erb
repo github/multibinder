@@ -13,7 +13,7 @@ haproxy_call = ARGV
 abort 'multibinder-haproxy expects a configuration file to be passed to haproxy' if haproxy_call.index('-f').nil?
 config_file_index = haproxy_call.index('-f') + 1
 haproxy_erb = haproxy_call[config_file_index]
-abort 'Config file must end with .erb' unless haproxy_erb.end_with? '.erb' or haproxy_erb.end_width? '.mb'
+abort 'Config file must end with .erb or .mb' unless haproxy_erb.end_with? '.erb' or haproxy_erb.end_with? '.mb'
 haproxy_cfg = haproxy_erb.sub(/\.(erb|mb)$/, '')
 haproxy_call[config_file_index] = haproxy_cfg
 
