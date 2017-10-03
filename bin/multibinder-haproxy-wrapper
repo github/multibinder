@@ -39,7 +39,10 @@ Signal.trap("USR2") do
 
   # wait a while for the pid file to change. after a while, give up and unblock reloads
   for i in 0..20
-    break if File.read($PID_FILE) != old_pids
+    begin
+      break if File.read($PID_FILE) != old_pids
+    rescue Errno::ENOENT
+    end
     sleep 1
   end
 end
