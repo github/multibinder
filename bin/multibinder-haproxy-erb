@@ -17,10 +17,13 @@ abort 'Config file must end with .erb or .mb' unless haproxy_erb.end_with? '.erb
 haproxy_cfg = haproxy_erb.sub(/\.(erb|mb)$/, '')
 haproxy_call[config_file_index] = haproxy_cfg
 
+$all_sockets = []
+
 def bind_tcp(ip, port)
   if ENV['MULTIBINDER_SOCK'] && !ENV['MULTIBINDER_SOCK'].empty?
     # if we have multibinder, use it to reuse our binds safely
     server = MultiBinder.bind ip, port, { :backlog => 10240 }
+    $all_sockets.push server # keep a copy while we're running so we don't GC the file descriptors by accident
     "fd@#{server.fileno}"
   else
     # otherwise resort to the old fashioned binds with downtime/packet loss
